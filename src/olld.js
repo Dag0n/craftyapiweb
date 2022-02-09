@@ -108,6 +108,7 @@ const InputVals = ({
   const [beerCacheFireStore, setBeerCacheFirestore] = useState([]);
   const [error, setError] = useState("");
   const [loadingFirestore, setLoadingFirestore] = useState(true);
+ 
   const searchURL = `https://api.crafty.camp/apis/ut.php?q=${
     brewName +
     " " +
