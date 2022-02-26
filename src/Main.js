@@ -45,6 +45,8 @@ const encodeImageToBlurhash = async (imageUrl) => {
 const Hits = ({ hits, highlightedItem, currentBeerToFind, setToAdd }) => (
   <div>
     {hits.map((hit, i) => {
+      hit.bid = hit.id;
+      hit.brewery = hit.brewCache
       return (
         <Button
           style={{ margin: 5 }}
@@ -56,12 +58,32 @@ const Hits = ({ hits, highlightedItem, currentBeerToFind, setToAdd }) => (
             setToAdd({
               ...hit,
               title: hit.beer_name,
+              brewery: {
+                brewery_id: hit.brewCache.brewId,
+                brewery_active: hit.brewCache.brewery_active,
+                brewery_label: hit.brewCache.brewery_label,
+                brewery_name: hit.brewCache.brewery_name,
+                brewery_page_url: hit.brewCache.brewery_page_url,
+                contact: {
+                  facebook: hit.brewCache.facebook,
+                  instagram: hit.brewCache.instagram,
+                  twitter: hit.brewCache.twitter,
+                  url: hit.brewCache.url,
+                },
+                location: {
+                  country_name: hit.brewCache.country_name,
+                  brewery_city: hit.brewCache.brewery_city,
+                  brewery_state: hit.brewCache.brewery_state,
+                },
+              },
               vendor: hit.brewery.brewery_name,
               shopBeerId: currentBeerToFind.shopId,
             });
           }}
         >
-          {hit.beer_name}<br />{hit.brewery.brewery_name}
+          {hit.beer_name}
+          <br />
+          {hit.brewery ? hit.brewery.brewery_name : "nork"}
         </Button>
       );
     })}
@@ -145,6 +167,7 @@ const Main = () => {
           shop: data.shop,
           handle: data.handle,
           brewery: [],
+          brewCache: [],
         });
         setPendingBeers(count);
         setCurrentBeerToFind(data);
@@ -208,7 +231,7 @@ const Main = () => {
   return (
     <Flex>
       <Box>
-       Remaining: {pendingBeers}
+        Remaining: {pendingBeers}
         {currentBeerToFind.length !== 0 && (
           <BeerCard currentBeerToFind={currentBeerToFind} />
         )}
@@ -294,7 +317,7 @@ const Main = () => {
         </Button>
       </Box>
       <Box flex={2}>
-        <InstantSearch searchClient={searchClient} indexName="beerIndex">
+        <InstantSearch searchClient={searchClient} indexName="craftyBeer">
           <Configure hitsPerPage={10} analytics={false} />
           <SearchBox
             focusShortcuts={[]}
@@ -327,7 +350,9 @@ const Main = () => {
                     });
                   }}
                 >
-                  {item.beer.beer_name}<br />{item.brewery.brewery_name}
+                  {item.beer.beer_name}
+                  <br />
+                  {item.brewery.brewery_name}
                 </Button>
               ))}
         </div>
