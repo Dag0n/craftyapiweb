@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button, Stack, Flex, Input, Box, Divider } from "@chakra-ui/react";
+import { Button, Stack, Flex, Input, Box, Textarea } from "@chakra-ui/react";
 import algoliasearch from "algoliasearch";
+import {instantMeiliSearch} from '@meilisearch/instant-meilisearch';
 import BeerCard from "./components/BeerCard";
 import {
   Configure,
@@ -11,12 +12,17 @@ import {
 import axios from "axios";
 import { encode } from "blurhash";
 
-const searchClient = algoliasearch(
+const searchClientA = algoliasearch(
   "CXLC6HNNXB",
   "a2f56d56d2d456f27b0814278ac43163"
 );
 
-const index = searchClient.initIndex("craftyBeer");
+const searchClient = instantMeiliSearch('https://index.crafty.camp', 't0mt0m', {
+  paginationTotalHits: 10,
+  primaryKey: 'id'
+});
+
+
 
 const loadImage = async (src) =>
   new Promise((resolve, reject) => {
@@ -101,13 +107,14 @@ const Main = () => {
 
   useEffect(() => {
     document.addEventListener("keydown", (e) => {
+      // console.log(e)
       setHighlightedItem(e);
     });
   });
 
   useEffect(() => {
     if (
-      (highlightedItem.metaKey || highlightedItem.altKey) &&
+      (highlightedItem.AltLeft || highlightedItem.altKey) &&
       highlightedItem.code === "KeyS"
     ) {
       highlightedItem.preventDefault();
@@ -117,7 +124,7 @@ const Main = () => {
     }
 
     if (
-      (highlightedItem.metaKey || highlightedItem.altKey) &&
+      (highlightedItem.AltLeft || highlightedItem.altKey) &&
       highlightedItem.code === "KeyA"
     ) {
       highlightedItem.preventDefault();
@@ -129,7 +136,7 @@ const Main = () => {
     }
 
     if (
-      (highlightedItem.metaKey || highlightedItem.altKey) &&
+      (highlightedItem.AltLeft || highlightedItem.altKey) &&
       highlightedItem.code === "KeyD"
     ) {
       highlightedItem.preventDefault();
@@ -139,7 +146,7 @@ const Main = () => {
     }
 
     if (
-      (highlightedItem.metaKey || highlightedItem.altKey) &&
+      (highlightedItem.AltLeft || highlightedItem.altKey) &&
       highlightedItem.code === "KeyE"
     ) {
       highlightedItem.preventDefault();
@@ -147,9 +154,9 @@ const Main = () => {
     }
   }, [highlightedItem]);
 
-  // useEffect(() => {
-  //   getBeer();
-  // }, []);
+  useEffect(() => {
+    getBeer();
+  }, []);
 
   const getBeer = async () => {
     setUntappdBeers([]);
@@ -228,7 +235,8 @@ const Main = () => {
       });
   };
 
-  return (
+  return pendingBeers === 0  ? <div>done</div> : (
+    
     <Flex>
       <Box>
         Remaining: {pendingBeers}
@@ -283,7 +291,8 @@ const Main = () => {
 
         <Button>{toAdd.length !== 0 && toAdd.brewery.brewery_id}</Button>
 
-        <Input
+        <Textarea
+        // type={'text'}
           placeholder="Beer"
           value={toAdd.title}
           onChange={(e) => {
@@ -317,7 +326,7 @@ const Main = () => {
         </Button>
       </Box>
       <Box flex={2}>
-        <InstantSearch searchClient={searchClient} indexName="craftyBeer">
+        <InstantSearch searchClient={searchClient} indexName="craftyBeers">
           <Configure hitsPerPage={10} analytics={false} />
           <SearchBox
             focusShortcuts={[]}
