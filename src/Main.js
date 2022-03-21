@@ -17,7 +17,7 @@ const searchClientA = algoliasearch(
   "a2f56d56d2d456f27b0814278ac43163"
 );
 
-const searchClient = instantMeiliSearch('https://index.crafty.camp', 't0mt0m', {
+const searchClient = instantMeiliSearch('https://index.crafty.camp', 'FyBtItegb7f581210c0a28c037fed8397027ee63d748919accc82c63bd8022b2d4a0b62a', {
   paginationTotalHits: 10,
   primaryKey: 'id'
 });
